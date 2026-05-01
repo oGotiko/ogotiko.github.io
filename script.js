@@ -6,17 +6,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const hamburger = document.querySelector('.hamburger');
     const navMenu = document.querySelector('.nav-menu');
 
-    // Sistema de abas
     function switchTab(tabName) {
-        // Remove classe active de todas as abas e links
         tabContents.forEach(content => {
             content.classList.remove('active');
         });
         navLinks.forEach(link => {
             link.classList.remove('active');
         });
-
-        // Adiciona classe active na aba e link selecionados
         const targetTab = document.getElementById(tabName);
         const targetLink = document.querySelector(`[data-tab="${tabName}"]`);
         
@@ -25,11 +21,9 @@ document.addEventListener('DOMContentLoaded', function() {
             targetLink.classList.add('active');
         }
 
-        // Atualiza URL sem recarregar a página
         history.pushState(null, null, `#${tabName}`);
     }
 
-    // Event listeners para links de navegação
     navLinks.forEach(link => {
         link.addEventListener('click', function(e) {
             e.preventDefault();
@@ -82,7 +76,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
         }, {
-            threshold: 0.1,
+            threshold: 0.5,
             rootMargin: '0px 0px -20px 0px'
         });
 
@@ -94,8 +88,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Inicializa animações
     animateOnScroll();
 
-    // Efeito de digitação para o título
-    function typeWriter(element, text, speed = 80) {
+    function typeWriter(element, text, speed = 150) {
         let i = 0;
         element.innerHTML = '';
         
@@ -114,7 +107,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (heroTitle) {
         const originalText = heroTitle.textContent;
         setTimeout(() => {
-            typeWriter(heroTitle, originalText, 80);
+            typeWriter(heroTitle, originalText, 20);
         }, 1000);
     }
 
@@ -123,7 +116,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const floatingIcons = document.querySelectorAll('.floating-icon');
         
         floatingIcons.forEach((icon, index) => {
-            icon.style.animationDelay = `${index * 0.5}s`;
+            icon.style.animationDelay = `${index * 0.8}s`;
             icon.classList.add('floating');
         });
     }
@@ -166,7 +159,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const homeObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
-                setTimeout(animateCounters, 500);
+                setTimeout(animateCounters, 20);
                 homeObserver.unobserve(entry.target);
             }
         });
@@ -177,28 +170,22 @@ document.addEventListener('DOMContentLoaded', function() {
         homeObserver.observe(homeSection);
     }
 
-    // Efeito de loading inicial
-    function showLoadingAnimation() {
-        const loader = document.createElement('div');
-        loader.className = 'page-loader';
-        loader.innerHTML = `
-            <div class="loader-content">
-                <div class="loader-spinner"></div>
-                <div class="loader-text">GOTIKO</div>
-            </div>
-        `;
-        
-        document.body.appendChild(loader);
-        
-        setTimeout(() => {
-            loader.style.opacity = '0';
-            setTimeout(() => {
-                loader.remove();
-                document.body.classList.add('loaded');
-            }, 500);
-        }, 1000);
+    
+}); 
+
+let lastScrollY = window.scrollY;
+const navbar = document.querySelector('.navbar');
+
+window.addEventListener('scroll', () => {
+    const currentScrollY = window.scrollY;
+
+    if (currentScrollY > lastScrollY && currentScrollY > 30) {
+        // DESCENDO
+        navbar.classList.add('nav-hidden');
+    } else {
+        // SUBINDO
+        navbar.classList.remove('nav-hidden');
     }
 
-    // Executa loading inicial
-    showLoadingAnimation();
-}); 
+    lastScrollY = currentScrollY;
+});
