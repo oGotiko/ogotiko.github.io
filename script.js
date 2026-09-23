@@ -6,6 +6,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const hamburger = document.querySelector('.hamburger');
     const navMenu = document.querySelector('.nav-menu');
     const languageToggle = document.querySelector('.language-toggle');
+    let currentLanguage = 'pt';
+    let typeWriterRun = 0;
+    let heroTitle = null;
 
     const translations = {
         pt: {
@@ -61,23 +64,29 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     function setLanguage(language) {
-        const dictionary = translations[language];
-        document.documentElement.lang = language === 'en' ? 'en' : 'pt-BR';
+        currentLanguage = language === 'en' ? 'en' : 'pt';
+        const activeLanguage = currentLanguage;
+        const dictionary = translations[activeLanguage];
+        typeWriterRun++;
+        document.documentElement.lang = activeLanguage === 'en' ? 'en' : 'pt-BR';
         document.querySelectorAll('[data-i18n]').forEach(element => {
             element.innerHTML = dictionary[element.dataset.i18n];
         });
         document.title = dictionary.pageTitle;
-        languageToggle.dataset.language = language;
-        languageToggle.querySelector('.language-current').textContent = language === 'en' ? 'PT' : 'EN';
-        languageToggle.setAttribute('aria-label', language === 'en' ? 'Mudar para português' : 'Switch to English');
-        languageToggle.title = language === 'en' ? 'Mudar para português' : 'Switch to English';
-        localStorage.setItem('siteLanguage', language);
+        languageToggle.dataset.language = activeLanguage;
+        languageToggle.querySelector('.language-current').textContent = activeLanguage === 'en' ? 'EN' : 'PT';
+        languageToggle.setAttribute('aria-label', activeLanguage === 'en' ? 'Mudar para português' : 'Switch to English');
+        languageToggle.title = activeLanguage === 'en' ? 'Mudar para português' : 'Switch to English';
+        localStorage.setItem('siteLanguage', activeLanguage);
+        if (heroTitle) {
+            heroTitle.textContent = dictionary.heroTitle;
+        }
     }
 
     const savedLanguage = localStorage.getItem('siteLanguage');
     setLanguage(savedLanguage === 'en' ? 'en' : 'pt');
     languageToggle.addEventListener('click', () => {
-        setLanguage(document.documentElement.lang === 'en' ? 'pt' : 'en');
+        setLanguage(currentLanguage === 'en' ? 'pt' : 'en');
     });
 
     function switchTab(tabName) {
@@ -164,9 +173,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function typeWriter(element, text, speed = 150) {
         let i = 0;
+        const run = ++typeWriterRun;
         element.innerHTML = '';
         
         function type() {
+            if (run !== typeWriterRun) {
+                return;
+            }
             if (i < text.length) {
                 element.innerHTML += text.charAt(i);
                 i++;
@@ -177,11 +190,11 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Aplica efeito de digitação no título principal
-    const heroTitle = document.querySelector('.hero-title .title-highlight');
+    heroTitle = document.querySelector('.hero-title .title-highlight');
     if (heroTitle) {
         const originalText = heroTitle.textContent;
         setTimeout(() => {
-            typeWriter(heroTitle, originalText, 20);
+            typeWriter(heroTitle, heroTitle.textContent, 20);
         }, 1000);
     }
 
